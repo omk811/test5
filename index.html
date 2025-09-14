@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار الكلمات المعربة والمبنية</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
+        body {
+            font-family: 'Amiri', serif;
+        }
+        .question-card {
+            transition: all 0.3s ease;
+        }
+        .option-btn {
+            transition: all 0.2s ease;
+        }
+        .option-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        .correct {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+        .incorrect {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+        .celebration {
+            animation: bounce 0.6s ease-in-out;
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Name Input Section -->
+        <div id="nameSection" class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-indigo-800 mb-2">📚 اختبار الكلمات المعربة والمبنية</h1>
+            <p class="text-lg text-gray-600 mb-6">للصف الخامس الابتدائي</p>
+            <div class="bg-white rounded-lg p-6 shadow-md max-w-md mx-auto">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">مرحباً بك! 👋</h2>
+                <input type="text" id="studentName" placeholder="اكتب اسمك هنا..." class="w-full p-3 border-2 border-gray-300 rounded-lg text-center text-lg font-semibold focus:border-indigo-500 focus:outline-none mb-4">
+                <button onclick="startQuiz()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg transition-colors duration-200">
+                    ابدأ الاختبار 🚀
+                </button>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <div id="quizHeader" class="text-center mb-8 hidden">
+            <h1 class="text-4xl font-bold text-indigo-800 mb-2">📚 اختبار الكلمات المعربة والمبنية</h1>
+            <p class="text-lg text-gray-600">للصف الخامس الابتدائي</p>
+            <div class="bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg p-3 mb-4 max-w-md mx-auto">
+                <p class="text-lg font-bold text-purple-800">الطالب: <span id="displayName" class="text-pink-600"></span> 🌟</p>
+            </div>
+            <div class="mt-4 bg-white rounded-lg p-4 shadow-md">
+                <div class="flex justify-between items-center">
+                    <span class="text-indigo-600 font-semibold">السؤال: <span id="currentQuestion">1</span> من 10</span>
+                    <span class="text-green-600 font-semibold">النقاط: <span id="score">0</span></span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-3 mt-2">
+                    <div id="progressBar" class="bg-indigo-500 h-3 rounded-full transition-all duration-300" style="width: 10%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Container -->
+        <div id="quizContainer" class="bg-white rounded-xl shadow-lg p-8 question-card hidden">
+            <div id="questionArea">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center" id="questionText"></h2>
+                <div id="optionsContainer" class="space-y-4">
+                    <!-- Options will be inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Container (Hidden initially) -->
+        <div id="resultsContainer" class="bg-white rounded-xl shadow-lg p-8 hidden">
+            <div class="text-center">
+                <div class="bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg p-3 mb-4 max-w-md mx-auto">
+                    <p class="text-lg font-bold text-purple-800">الطالب: <span id="resultName" class="text-pink-600"></span> 🌟</p>
+                </div>
+                <div id="resultIcon" class="text-6xl mb-4"></div>
+                <h2 id="resultTitle" class="text-3xl font-bold mb-4"></h2>
+                <p id="resultMessage" class="text-xl text-gray-600 mb-6"></p>
+                <div class="bg-indigo-50 rounded-lg p-6 mb-6">
+                    <h3 class="text-xl font-bold text-indigo-800 mb-4">ملخص النتائج:</h3>
+                    <div class="grid grid-cols-2 gap-4 text-center">
+                        <div class="bg-green-100 rounded-lg p-4">
+                            <div class="text-2xl font-bold text-green-600" id="correctAnswers">0</div>
+                            <div class="text-green-700">إجابات صحيحة</div>
+                        </div>
+                        <div class="bg-red-100 rounded-lg p-4">
+                            <div class="text-2xl font-bold text-red-600" id="incorrectAnswers">0</div>
+                            <div class="text-red-700">إجابات خاطئة</div>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="restartQuiz()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg transition-colors duration-200">
+                    🔄 إعادة الاختبار
+                </button>
+            </div>
+        </div>
+
+        <!-- Next Button -->
+        <div class="text-center mt-6">
+            <button id="nextBtn" onclick="nextQuestion()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg transition-colors duration-200 hidden">
+                السؤال التالي ⬅️
+            </button>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-8 pt-6 border-t border-gray-200">
+            <div class="bg-white rounded-lg p-4 shadow-md max-w-md mx-auto">
+                <p class="text-gray-700 font-semibold mb-2">إعداد وتصميم:</p>
+                <p class="text-indigo-600 font-bold text-lg mb-3">الأستاذ خليل البلوشي</p>
+                <a href="https://omk811.blogspot.com/2025/09/blog-post_13.html?m=1" target="_blank" class="inline-block bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200">
+                    🔗 العودة للموقع
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "في قوله تعالى: 'قُلْ يَا أَيُّهَا الْكَافِرُونَ'، كلمة 'قُلْ' هي:",
+                options: ["كلمة معربة", "كلمة مبنية", "حرف جر", "اسم إشارة"],
+                correct: 1,
+                explanation: "قُلْ فعل أمر مبني على السكون، والأفعال كلها مبنية"
+            },
+            {
+                question: "كلمة 'الْكَافِرُونَ' في الآية الكريمة نوعها:",
+                options: ["مبنية", "معربة", "حرف", "ضمير"],
+                correct: 1,
+                explanation: "الْكَافِرُونَ كلمة معربة مرفوعة وعلامة رفعها الواو لأنها جمع مذكر سالم"
+            },
+            {
+                question: "في قوله تعالى: 'لَا أَعْبُدُ مَا تَعْبُدُونَ'، كلمة 'لَا' هي:",
+                options: ["معربة", "مبنية", "اسم فاعل", "مفعول به"],
+                correct: 1,
+                explanation: "لَا حرف نفي مبني على السكون، والحروف كلها مبنية"
+            },
+            {
+                question: "كلمة 'أَعْبُدُ' في الآية الكريمة نوعها:",
+                options: ["مبنية", "معربة", "حرف جر", "اسم إشارة"],
+                correct: 1,
+                explanation: "أَعْبُدُ فعل مضارع مبني لاتصاله بنون النسوة المحذوفة (أصلها أعبدن)"
+            },
+            {
+                question: "في قوله تعالى: 'مَا تَعْبُدُونَ'، كلمة 'مَا' هي:",
+                options: ["معربة", "مبنية", "فعل أمر", "جمع مذكر"],
+                correct: 1,
+                explanation: "مَا اسم موصول مبني على السكون في محل نصب مفعول به"
+            },
+            {
+                question: "كلمة 'تَعْبُدُونَ' في الآية الكريمة نوعها:",
+                options: ["مبنية", "معربة", "حرف نفي", "اسم إشارة"],
+                correct: 1,
+                explanation: "تَعْبُدُونَ فعل مضارع معرب مرفوع وعلامة رفعه ثبوت النون لأنه من الأفعال الخمسة"
+            },
+            {
+                question: "في قوله تعالى: 'وَلَا أَنتُمْ عَابِدُونَ'، كلمة 'أَنتُمْ' هي:",
+                options: ["معربة", "مبنية", "فعل ماضي", "حرف عطف"],
+                correct: 1,
+                explanation: "أَنتُمْ ضمير منفصل مبني على السكون في محل رفع مبتدأ"
+            },
+            {
+                question: "كلمة 'عَابِدُونَ' في الآية الكريمة نوعها:",
+                options: ["مبنية", "معربة", "ضمير متصل", "حرف جر"],
+                correct: 1,
+                explanation: "عَابِدُونَ خبر مرفوع وعلامة رفعه الواو لأنه جمع مذكر سالم، فهو معرب"
+            },
+            {
+                question: "في قوله تعالى: 'لَكُمْ دِينُكُمْ'، كلمة 'لَكُمْ' هي:",
+                options: ["معربة", "مبنية", "فعل مضارع", "اسم فاعل"],
+                correct: 1,
+                explanation: "لَكُمْ مكونة من حرف الجر 'لَ' والضمير 'كُمْ'، والضمائر مبنية"
+            },
+            {
+                question: "كلمة 'دِينُكُمْ' في قوله تعالى: 'لَكُمْ دِينُكُمْ وَلِيَ دِينِ' نوعها:",
+                options: ["مبنية", "معربة", "حرف نداء", "اسم إشارة"],
+                correct: 1,
+                explanation: "دِينُكُمْ مبتدأ مؤخر مرفوع وعلامة رفعه الضمة، فهو معرب"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let selectedAnswer = null;
+        let correctAnswers = 0;
+        let incorrectAnswers = 0;
+        let studentName = '';
+
+        function startQuiz() {
+            const nameInput = document.getElementById('studentName');
+            studentName = nameInput.value.trim();
+            
+            if (studentName === '') {
+                alert('من فضلك اكتب اسمك أولاً! 😊');
+                nameInput.focus();
+                return;
+            }
+            
+            // Hide name section and show quiz
+            document.getElementById('nameSection').classList.add('hidden');
+            document.getElementById('quizHeader').classList.remove('hidden');
+            document.getElementById('quizContainer').classList.remove('hidden');
+            
+            // Display name in header
+            document.getElementById('displayName').textContent = studentName;
+            
+            // Start the quiz
+            displayQuestion();
+        }
+
+        function displayQuestion() {
+            const question = questions[currentQuestionIndex];
+            document.getElementById('questionText').textContent = question.question;
+            document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = 'option-btn w-full p-4 text-right bg-gray-50 hover:bg-gray-100 border-2 border-gray-200 rounded-lg font-semibold text-lg transition-all duration-200';
+                button.textContent = option;
+                button.onclick = () => selectAnswer(index, button);
+                optionsContainer.appendChild(button);
+            });
+            
+            document.getElementById('nextBtn').classList.add('hidden');
+            selectedAnswer = null;
+            
+            // Update progress bar
+            const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function selectAnswer(answerIndex, buttonElement) {
+            if (selectedAnswer !== null) return; // Prevent multiple selections
+            
+            selectedAnswer = answerIndex;
+            const question = questions[currentQuestionIndex];
+            const allButtons = document.querySelectorAll('.option-btn');
+            
+            // Disable all buttons
+            allButtons.forEach(btn => btn.style.pointerEvents = 'none');
+            
+            if (answerIndex === question.correct) {
+                buttonElement.className = 'option-btn w-full p-4 text-right border-2 rounded-lg font-semibold text-lg correct celebration';
+                score += 10;
+                correctAnswers++;
+                document.getElementById('score').textContent = score;
+            } else {
+                buttonElement.className = 'option-btn w-full p-4 text-right border-2 rounded-lg font-semibold text-lg incorrect';
+                // Show correct answer
+                allButtons[question.correct].className = 'option-btn w-full p-4 text-right border-2 rounded-lg font-semibold text-lg correct';
+                incorrectAnswers++;
+            }
+            
+            // Show explanation
+            setTimeout(() => {
+                const explanationDiv = document.createElement('div');
+                explanationDiv.className = 'mt-4 p-4 bg-blue-50 border-r-4 border-blue-400 rounded-lg';
+                explanationDiv.innerHTML = `<strong>💡 التفسير:</strong> ${question.explanation}`;
+                document.getElementById('optionsContainer').appendChild(explanationDiv);
+                
+                document.getElementById('nextBtn').classList.remove('hidden');
+            }, 1000);
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            
+            if (currentQuestionIndex < questions.length) {
+                displayQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('quizContainer').classList.add('hidden');
+            document.getElementById('quizHeader').classList.add('hidden');
+            document.getElementById('resultsContainer').classList.remove('hidden');
+            document.getElementById('nextBtn').classList.add('hidden');
+            
+            // Display student name in results
+            document.getElementById('resultName').textContent = studentName;
+            
+            const percentage = (score / (questions.length * 10)) * 100;
+            
+            let resultIcon, resultTitle, resultMessage;
+            
+            if (percentage >= 80) {
+                resultIcon = '🏆';
+                resultTitle = 'ممتاز جداً!';
+                resultMessage = 'أحسنت! لديك فهم ممتاز للكلمات المعربة والمبنية';
+            } else if (percentage >= 60) {
+                resultIcon = '👍';
+                resultTitle = 'جيد جداً!';
+                resultMessage = 'عمل رائع! تحتاج لمراجعة بسيطة فقط';
+            } else if (percentage >= 40) {
+                resultIcon = '📚';
+                resultTitle = 'جيد!';
+                resultMessage = 'تحتاج لمزيد من المراجعة والتدريب';
+            } else {
+                resultIcon = '💪';
+                resultTitle = 'استمر في التعلم!';
+                resultMessage = 'لا تيأس، راجع الدروس وحاول مرة أخرى';
+            }
+            
+            document.getElementById('resultIcon').textContent = resultIcon;
+            document.getElementById('resultTitle').textContent = resultTitle;
+            document.getElementById('resultMessage').textContent = resultMessage;
+            document.getElementById('correctAnswers').textContent = correctAnswers;
+            document.getElementById('incorrectAnswers').textContent = incorrectAnswers;
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            selectedAnswer = null;
+            correctAnswers = 0;
+            incorrectAnswers = 0;
+            
+            document.getElementById('score').textContent = '0';
+            document.getElementById('quizContainer').classList.remove('hidden');
+            document.getElementById('quizHeader').classList.remove('hidden');
+            document.getElementById('resultsContainer').classList.add('hidden');
+            
+            displayQuestion();
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ee238251a3f9d3',t:'MTc1NzgzNDYwNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
